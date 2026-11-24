@@ -612,7 +612,7 @@ function render() {
       <div class="empty-state">
         <span class="emoji">🎁</span>
         <div class="title">Пока нет целей</div>
-        <div>Нажми «➕ Новая цель» выше, чтобы добавить первую!</div>
+        <div>Нажми «➕ Новая цель», чтобы добавить первую!</div>
       </div>`;
     return;
   }
