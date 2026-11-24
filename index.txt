@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#f8fafc">
+<title>Мои цели</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<style>
+  :root {
+    --bg-primary: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-input: #f1f5f9;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.2);
+    --success: #10b981;
+    --success-glow: rgba(16, 185, 129, 0.2);
+    --danger: #ef4444;
+    --gold: #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.2);
+    --wallpaper: url('https://i.ibb.co/rRTDvqHk/istockphoto-2095341852-612x612.jpg');
+    --veil: rgba(248, 250, 252, 0.62);
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+
+  html { min-height: 100%; }
+  html::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1;
+    background-color: var(--bg-primary);
+    background-image: linear-gradient(var(--veil), var(--veil)), var(--wallpaper);
+    background-size: auto, 240px 240px;
+    background-repeat: no-repeat, repeat;
+    background-position: center, top left;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 16px;
+    min-height: 100vh;
+  }
+
+  h1 {
+    font-size: 1.8em; margin: 10px 0 24px; text-align: center; font-weight: 800; letter-spacing: -0.5px;
+    text-shadow: 0 2px 10px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.8);
+  }
+
+  h2 {
+    font-size: 1.1em; margin: 28px 0 12px; color: var(--text-secondary); font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+    text-shadow: 0 1px 6px rgba(255,255,255,0.9);
+  }
+
+  .toggle-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    transition: opacity 0.2s;
+  }
+  .toggle-header:active { opacity: 0.6; }
+  .toggle-header .arrow {
+    transition: transform 0.3s ease;
+    font-size: 0.8em;
+    color: var(--text-secondary);
+  }
+  .toggle-header .arrow.rotated { transform: rotate(180deg); }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px; padding: 20px; margin: 16px 0; position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .goal-title { font-weight: 700; font-size: 1.15em; flex: 1; padding-right: 10px; }
+  .cup { font-size: 1.6em; filter: drop-shadow(0 0 8px var(--gold-glow)); }
+
+  .menu-btn {
+    background: none; border: none; font-size: 1.5em; color: var(--text-secondary);
+    cursor: pointer; padding: 0 8px; margin: -8px -8px 0 0; line-height: 1; border-radius: 50%;
+  }
+  .menu-btn:active { background: var(--bg-input); }
+
+  .dropdown-menu {
+    position: absolute; top: 50px; right: 16px; background: white;
+    border: 1px solid var(--border-color); border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100;
+    display: none; overflow: hidden; min-width: 150px;
+  }
+  .dropdown-menu.show { display: block; animation: fadeIn 0.15s ease-out; }
+  .dropdown-menu button {
+    width: 100%; text-align: left; padding: 12px 16px; margin: 0; border-radius: 0;
+    font-size: 0.95em; font-weight: 500; background: white; color: var(--text-primary);
+    border: none; border-bottom: 1px solid var(--border-color);
+  }
+  .dropdown-menu button:last-child { border-bottom: none; }
+  .dropdown-menu button:active { background: var(--bg-input); }
+  .dropdown-menu button.danger { color: var(--danger); }
+
+  .xp-bar { height: 12px; background: var(--bg-input); border-radius: 99px; overflow: hidden; margin: 12px 0; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); transition: width 0.6s cubic-bezier(0.4,0,0.2,1); border-radius: 99px; position: relative; }
+  .xp-fill::after {
+    content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 2s infinite;
+  }
+  @keyframes shimmer { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%);} }
+
+  .progress-text { font-size: 0.9em; color: var(--text-secondary); text-align: right; font-weight: 500; margin-bottom: 16px; }
+
+  label { font-size: 0.85em; color: var(--text-secondary); display: block; margin-top: 16px; margin-bottom: 6px; font-weight: 600; }
+
+  input, select {
+    width: 100%; font-size: 16px; padding: 14px; border-radius: 12px;
+    border: 1px solid var(--border-color); background: var(--bg-input); color: var(--text-primary);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); background: white; }
+
+  .btn-primary {
+    font-size: 16px; padding: 14px; border-radius: 14px; border: none; cursor: pointer;
+    margin-top: 12px; width: 100%; font-weight: 600;
+    background: linear-gradient(135deg, var(--accent), #2563eb); color: white;
+    box-shadow: 0 4px 12px var(--accent-glow); transition: all 0.15s ease;
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .btn-primary:disabled { background: #cbd5e1; box-shadow: none; color: #94a3b8; cursor: not-allowed; transform: none; }
+  .btn-small { padding: 10px 16px; font-size: 0.9em; width: auto; margin-top: 0; border-radius: 10px; }
+
+  .btn-ghost {
+    font-size: 15px; padding: 13px 16px; border-radius: 14px; cursor: pointer;
+    background: var(--bg-card); color: var(--text-primary);
+    border: 1px solid var(--border-color); font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: all 0.15s ease;
+  }
+  .btn-ghost:active { transform: scale(0.97); background: var(--bg-input); }
+
+  .row { display: flex; gap: 12px; }
+  .row > * { flex: 1; }
+
+  .reward-inputs {
+    display: flex; gap: 8px; align-items: center;
+    background: var(--bg-input); padding: 8px; border-radius: 12px; margin-bottom: 8px;
+  }
+  .reward-inputs .icon-input {
+    flex: 0 0 48px; width: 48px; text-align: center; font-size: 1.4em;
+    padding: 6px 0; background: white; border: 1px solid var(--border-color); border-radius: 8px;
+  }
+  .reward-inputs .mid { display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  .reward-inputs input { font-size: 14px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: white; }
+  .reward-inputs .img-input { font-size: 12px; color: var(--text-secondary); }
+
+  .rewards { display: flex; gap: 10px; margin-top: 20px; }
+
+  .reward-slot {
+    flex: 1; text-align: center; border-radius: 16px; padding: 16px 6px 12px;
+    background: var(--bg-input); border: 1px solid var(--border-color);
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 132px;
+  }
+  .reward-slot.locked { opacity: 0.5; }
+  .reward-slot.locked::after { content: '🔒'; position: absolute; top: 8px; right: 8px; font-size: 0.85em; opacity: 0.6; }
+  .reward-slot.unlocked {
+    opacity: 1; border-color: var(--gold);
+    background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
+    box-shadow: 0 4px 12px var(--gold-glow); transform: translateY(-4px);
+  }
+
+  .reward-emoji {
+    font-size: 3em; line-height: 1; margin-bottom: 8px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), filter 0.4s ease;
+  }
+  .reward-slot.locked .reward-emoji { filter: grayscale(100%) opacity(0.4); transform: scale(0.85); }
+  .reward-slot.unlocked .reward-emoji {
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+    transform: scale(1.15);
+    animation: popIcon 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  @keyframes popIcon {
+    0% { transform: scale(0.5) rotate(-10deg); }
+    50% { transform: scale(1.3) rotate(5deg); }
+    100% { transform: scale(1.15) rotate(0deg); }
+  }
+
+  .reward-visual {
+    width: 52px; height: 52px; border-radius: 50%;
+    object-fit: contain; padding: 6px; background: white;
+    border: 1px solid var(--border-color); margin-bottom: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275), filter 0.4s ease;
+  }
+  .reward-slot.locked .reward-visual { filter: grayscale(100%) opacity(0.45); transform: scale(0.85); }
+  .reward-slot.unlocked .reward-visual {
+    transform: scale(1.1);
+    animation: popIcon 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+    box-shadow: 0 6px 14px var(--gold-glow), 0 2px 6px rgba(0,0,0,0.15);
+    border-color: var(--gold);
+  }
+
+  .reward-name { font-size: 0.78em; color: var(--text-primary); font-weight: 600; line-height: 1.25; margin-bottom: 4px; }
+
+  .reward-stage {
+    font-size: 0.65em; color: var(--text-secondary);
+    background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 99px; white-space: nowrap; margin-bottom: 6px;
+  }
+  .reward-slot.unlocked .reward-stage { background: rgba(245,158,11,0.15); color: #b45309; font-weight: 700; }
+
+  .goal.done { border: 2px solid var(--gold); background: #fffbeb; }
+  .frozen {
+    color: #b45309; font-weight: 700; font-size: 1em; text-align: center; padding: 12px;
+    background: rgba(245,158,11,0.1); border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .weight-box { display: flex; gap: 10px; align-items: center; }
+  .weight-box input { flex: 1; margin-top: 0; }
+  .weight-box button { flex: 0 0 auto; margin-top: 0; width: auto; padding: 14px 20px; }
+  .hint { font-size: 0.8em; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; }
+
+  .empty-state {
+    text-align: center; color: var(--text-secondary); padding: 40px 20px;
+    background: var(--bg-card); border: 1px dashed var(--border-color);
+    border-radius: 20px; margin: 16px 0;
+  }
+  .empty-state .emoji { font-size: 3em; margin-bottom: 12px; display: block; }
+  .empty-state .title { font-weight: 600; color: var(--text-primary); margin-bottom: 6px; font-size: 1.05em; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px);} to { opacity: 1; transform: translateY(0);} }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 18px; transform: translate(-50%, 140%);
+    width: calc(100% - 32px); max-width: 480px;
+    background: var(--bg-card); border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 14px 16px; z-index: 200;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    display: flex; flex-direction: column; gap: 10px;
+    transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .toast.show { transform: translate(-50%, 0); }
+  .toast-text { font-size: 0.9em; color: var(--text-primary); font-weight: 500; line-height: 1.4; display: flex; gap: 8px; align-items: flex-start; }
+  .toast-text .t-ico { font-size: 1.3em; line-height: 1; }
+  .toast-actions { display: flex; gap: 8px; }
+  .toast-actions .btn-ghost { flex: 1; margin: 0; padding: 10px; font-size: 0.9em; }
+  .toast-actions .btn-ghost.primary { background: linear-gradient(135deg, var(--accent), #2563eb); color: white; border: none; }
+</style>
+</head>
+<body>
+
+<h1>🎯 Мои цели</h1>
+
+<h2>📋 Активные цели</h2>
+<div id="goals"></div>
+
+<!-- СВОРАЧИВАЕМАЯ ФОРМА НОВОЙ ЦЕЛИ -->
+<h2 class="toggle-header" onclick="toggleNewGoal()">
+  <span>➕ Новая цель</span>
+  <span id="newGoalArrow" class="arrow">▼</span>
+</h2>
+
+<div id="newGoalForm" class="card" style="display: none;">
+  <label>Тип цели</label>
+  <select id="gType" onchange="toggleType()">
+    <option value="count">Счётчик (дни / штуки) — жму «+1»</option>
+    <option value="weight">Похудение — ввожу текущий вес</option>
+  </select>
+
+  <label>Название цели</label>
+  <input id="gName" placeholder="Например: Читать 30 минут в день">
+
+  <div id="countFields">
+    <label>Сколько всего нужно</label>
+    <input id="gTotal" type="number" placeholder="30">
+    <label>Единица измерения</label>
+    <input id="gUnit" placeholder="дней или штук">
+  </div>
+
+  <div id="weightFields" style="display:none">
+    <div class="row">
+      <div><label>Стартовый вес (кг)</label><input id="gStart" type="number" step="0.1" placeholder="70"></div>
+      <div><label>Сбросить (кг)</label><input id="gLose" type="number" step="0.1" placeholder="5"></div>
+    </div>
+    <div class="hint">💡 Целевой вес рассчитается автоматически.</div>
+  </div>
+
+  <label style="margin-top:20px">🎁 Награда 1 (треть пути)</label>
+  <div class="reward-inputs">
+    <input id="r1icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
+    <div class="mid">
+      <input id="r1name" class="name-input" placeholder="Название награды">
+      <input id="r1img" class="img-input" placeholder="Ссылка на картинку (необязательно)">
+    </div>
+  </div>
+
+  <label>🎁 Награда 2 (две трети)</label>
+  <div class="reward-inputs">
+    <input id="r2icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
+    <div class="mid">
+      <input id="r2name" class="name-input" placeholder="Название награды">
+      <input id="r2img" class="img-input" placeholder="Ссылка на картинку (необязательно)">
+    </div>
+  </div>
+
+  <label>🎁 Награда 3 (финиш)</label>
+  <div class="reward-inputs">
+    <input id="r3icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
+    <div class="mid">
+      <input id="r3name" class="name-input" placeholder="Название награды">
+      <input id="r3img" class="img-input" placeholder="Ссылка на картинку (необязательно)">
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="addGoal()">✨ Добавить цель</button>
+</div>
+
+<!-- БЭКАП -->
+<h2>🛡️ Резервная копия</h2>
+<div class="card">
+  <div class="row">
+    <button class="btn-ghost" onclick="exportBackup()">💾 Скачать бэкап</button>
+    <button class="btn-ghost" onclick="document.getElementById('importFile').click()">📂 Загрузить бэкап</button>
+  </div>
+  <div class="hint" style="margin-top:10px">Скачивай бэкап раз в неделю и пересылай файл в Telegram «Избранное» или облако — так прогресс не потеряется при смене устройства.</div>
+  <input type="file" id="importFile" accept=".json,application/json" style="display:none">
+</div>
+
+<div style="margin-top:32px; text-align: center;">
+  <button class="btn-small" onclick="resetAll()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); width: auto; padding: 12px 24px;">
+    🔄 Сбросить всё
+  </button>
+</div>
+
+<!-- Тост -->
+<div class="toast" id="toast">
+  <div class="toast-text"><span class="t-ico" id="toastIco">💾</span><span id="toastMsg"></span></div>
+  <div class="toast-actions" id="toastActions"></div>
+</div>
+
+<script>
+const KEY = 'goalquest_friend_v1';
+
+// ПУСТОЙ СТАРТ — никаких шаблонных целей
+const SEED = [];
+
+function makeSeedGoals() {
+  return SEED.map((s, idx) => {
+    const g = Object.assign({}, s);
+    g.id = Date.now() + idx;
+    g.done = false;
+    g.lastLog = null;
+    if (s.type === 'weight') { g.current = s.current; g.target = s.target; }
+    else g.current = 0;
+    return g;
+  });
+}
+
+const goalsEl = document.getElementById('goals');
+let state;
+try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e) { state = null; }
+if (!state || !Array.isArray(state.goals)) {
+  state = { goals: makeSeedGoals(), lastBackup: new Date().toISOString() };
+  localStorage.setItem(KEY, JSON.stringify(state));
+}
+
+function save() { localStorage.setItem(KEY, JSON.stringify(state)); render(); }
+function isImage(s) { return /^https?:\/\//.test(s); }
+function today() { return new Date().toISOString().slice(0, 10); }
+
+function toggleType() {
+  const t = document.getElementById('gType').value;
+  document.getElementById('countFields').style.display  = t === 'count' ? 'block' : 'none';
+  document.getElementById('weightFields').style.display = t === 'weight' ? 'block' : 'none';
+}
+
+/* ---------- СВОРАЧИВАНИЕ ФОРМЫ ---------- */
+function toggleNewGoal(forceState) {
+  const form = document.getElementById('newGoalForm');
+  const arrow = document.getElementById('newGoalArrow');
+  const isHidden = form.style.display === 'none' || form.style.display === '';
+  const newState = forceState !== undefined ? forceState : isHidden;
+  
+  form.style.display = newState ? 'block' : 'none';
+  if (newState) arrow.classList.add('rotated');
+  else arrow.classList.remove('rotated');
+}
+
+/* ---------- КОНФЕТТИ ---------- */
+function checkAndCelebrate(oldFrac, newFrac, isFinal) {
+  const tiers = [1/3, 2/3, 1.0];
+  let unlockedTier = 0;
+  for (let i = 0; i < tiers.length; i++) {
+    if (oldFrac < tiers[i] && newFrac >= tiers[i]) unlockedTier = i + 1;
+  }
+  if (unlockedTier === 3 || isFinal) {
+    var end = Date.now() + 2500;
+    (function frame() {
+      confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0, y: 0.7 }, colors: ['#f59e0b','#10b981','#3b82f6','#fbbf24'] });
+      confetti({ particleCount: 6, angle: 120, spread: 60, origin: { x: 1, y: 0.7 }, colors: ['#f59e0b','#10b981','#3b82f6','#fbbf24'] });
+      if (Date.now() < end) requestAnimationFrame(frame);
+    }());
+  } else if (unlockedTier > 0) {
+    confetti({ particleCount: 120, spread: 80, origin: { y: 0.7 }, colors: ['#f59e0b','#fbbf24','#10b981','#3b82f6'], gravity: 0.8, scalar: 1.2 });
+  }
+}
+
+/* ---------- ТОСТ / НАПОМИНАНИЕ ---------- */
+const toast = document.getElementById('toast');
+const toastMsg = document.getElementById('toastMsg');
+const toastIco = document.getElementById('toastIco');
+const toastActions = document.getElementById('toastActions');
+let toastTimer = null;
+
+function showToast(ico, msg, actions) {
+  toastIco.textContent = ico;
+  toastMsg.textContent = msg;
+  toastActions.innerHTML = '';
+  (actions || []).forEach(a => {
+    const b = document.createElement('button');
+    b.className = 'btn-ghost' + (a.primary ? ' primary' : '');
+    b.textContent = a.label;
+    b.onclick = a.onClick;
+    toastActions.appendChild(b);
+  });
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  if (!actions) toastTimer = setTimeout(hideToast, 4000);
+}
+function hideToast() { toast.classList.remove('show'); }
+
+function daysSince(iso) {
+  if (!iso) return Infinity;
+  return (Date.now() - new Date(iso).getTime()) / 86400000;
+}
+
+function checkBackupReminder() {
+  if (daysSince(state.lastBackup) > 7) {
+    showToast('💾', 'Прошло больше недели с последнего бэкапа. Сохрани прогресс, чтобы не потерять его.', [
+      { label: 'Скачать сейчас', primary: true, onClick: () => { exportBackup(); } },
+      { label: 'Позже', onClick: () => { hideToast(); } }
+    ]);
+  }
+}
+
+/* ---------- БЭКАП ---------- */
+function markBackup() {
+  state.lastBackup = new Date().toISOString();
+  localStorage.setItem(KEY, JSON.stringify(state));
+}
+
+function exportBackup() {
+  const d = new Date().toISOString().slice(0, 10);
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'goal-tracker-backup-' + d + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  markBackup();
+  hideToast();
+  showToast('✅', 'Бэкап сохранён. Перешли файл в Telegram «Избранное» или облако.');
+}
+
+document.getElementById('importFile').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    let parsed;
+    try { parsed = JSON.parse(ev.target.result); }
+    catch(err) { alert('Файл повреждён или это не бэкап трекера.'); e.target.value=''; return; }
+    if (!parsed || !Array.isArray(parsed.goals)) { alert('В файле нет данных целей.'); e.target.value=''; return; }
+    if (!confirm('Загрузить этот бэкап? Текущий прогресс будет заменён.')) { e.target.value=''; return; }
+    state = parsed;
+    if (!state.lastBackup) state.lastBackup = new Date().toISOString();
+    save();
+    markBackup();
+    e.target.value = '';
+    showToast('📂', 'Прогресс восстановлен из бэкапа.');
+  };
+  reader.readAsText(file);
+});
+
+/* ---------- ДОБАВЛЕНИЕ ---------- */
+function addGoal() {
+  const type = document.getElementById('gType').value;
+  const name = document.getElementById('gName').value.trim();
+  if (!name) { alert('Введите название цели'); return; }
+
+  const rewards = [1,2,3].map(n => {
+    const icon = document.getElementById('r' + n + 'icon').value.trim();
+    const rname = document.getElementById('r' + n + 'name').value.trim();
+    const rimg = document.getElementById('r' + n + 'img').value.trim();
+    return { icon: icon || '🎁', name: rname || ('Этап ' + n), img: rimg || '' };
+  });
+
+  if (type === 'count') {
+    const totalRaw = document.getElementById('gTotal').value.trim();
+    const total = parseFloat(totalRaw);
+    const unit = document.getElementById('gUnit').value.trim();
+    if (totalRaw === '' || isNaN(total) || total <= 0) { alert('Введите общее количество числом'); return; }
+    if (!unit) { alert('Введите единицу (дней / шт)'); return; }
+    state.goals.push({ id: Date.now(), type: 'count', name, total, unit, current: 0, rewards, done: false, lastLog: null });
+  } else {
+    const start = parseFloat(document.getElementById('gStart').value);
+    const lose = parseFloat(document.getElementById('gLose').value);
+    if (isNaN(start) || isNaN(lose) || start <= 0 || lose <= 0) { alert('Введите стартовый вес и сколько сбросить'); return; }
+    if (lose >= start) { alert('Сбросить больше стартового веса нельзя'); return; }
+    state.goals.push({ id: Date.now(), type: 'weight', name, start, lose, target: start - lose, current: start, rewards, done: false, lastLog: null });
+  }
+
+  ['gName','gTotal','gUnit','gStart','gLose',
+   'r1icon','r1name','r1img','r2icon','r2name','r2img','r3icon','r3name','r3img']
+    .forEach(id => document.getElementById(id).value = '');
+  
+  // Возвращаем иконки по умолчанию 🎁
+  ['r1icon','r2icon','r3icon'].forEach(id => document.getElementById(id).value = '🎁');
+
+  save();
+  setTimeout(() => goalsEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  
+  toggleNewGoal(false);
+}
+
+/* ---------- ПРОГРЕСС ---------- */
+function getLost(g) { return g.start - g.current; }
+function progressFraction(g) {
+  if (g.type === 'weight') return Math.min(1, getLost(g) / g.lose);
+  return Math.min(1, g.current / g.total);
+}
+
+function addCount(id) {
+  const g = state.goals.find(x => x.id === id);
+  if (g.done) return;
+  if (g.lastLog === today()) { alert('Сегодня уже отмечено. Приходите завтра!'); return; }
+  const oldFrac = progressFraction(g);
+  g.current += 1;
+  if (g.current >= g.total) { g.current = g.total; g.done = true; }
+  g.lastLog = today();
+  checkAndCelebrate(oldFrac, progressFraction(g), g.done);
+  save();
+}
+
+function saveWeight(id) {
+  const g = state.goals.find(x => x.id === id);
+  if (g.done) return;
+  const inp = document.getElementById('w_' + id);
+  const v = parseFloat(inp.value);
+  if (isNaN(v) || v <= 0) { alert('Введите текущий вес числом'); return; }
+  if (g.lastLog === today()) { alert('Сегодня уже отмечено. Приходите завтра!'); return; }
+  if (v >= g.current) { alert('Вес должен быть меньше предыдущего (' + g.current + ' кг)'); return; }
+  const oldFrac = progressFraction(g);
+  g.current = v;
+  if (g.current <= g.target) { g.current = g.target; g.done = true; }
+  g.lastLog = today();
+  checkAndCelebrate(oldFrac, progressFraction(g), g.done);
+  save();
+}
+
+function resetGoal(id) {
+  const g = state.goals.find(x => x.id === id);
+  if (!confirm('Сбросить прогресс цели «' + g.name + '»?')) return;
+  g.current = g.type === 'weight' ? g.start : 0;
+  g.done = false; g.lastLog = null;
+  closeAllMenus(); save();
+}
+function delGoal(id) {
+  const g = state.goals.find(x => x.id === id);
+  if (!confirm('Удалить цель «' + g.name + '» навсегда?')) return;
+  state.goals = state.goals.filter(x => x.id !== id);
+  closeAllMenus(); save();
+}
+function resetAll() {
+  if (!confirm('Сбросить ВСЁ? Все цели и прогресс будут удалены.')) return;
+  state = { goals: [], lastBackup: new Date().toISOString() }; save();
+}
+
+/* ---------- МЕНЮ ---------- */
+function toggleMenu(id) {
+  const menu = document.getElementById('menu-' + id);
+  const shown = menu.classList.contains('show');
+  closeAllMenus();
+  if (!shown) menu.classList.add('show');
+}
+function closeAllMenus() {
+  document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menu-btn') && !e.target.closest('.dropdown-menu')) closeAllMenus();
+});
+
+/* ---------- ОТРИСОВКА ---------- */
+function render() {
+  if (!state.goals.length) {
+    goalsEl.innerHTML = `
+      <div class="empty-state">
+        <span class="emoji">🎁</span>
+        <div class="title">Пока нет целей</div>
+        <div>Нажми «➕ Новая цель» выше, чтобы добавить первую!</div>
+      </div>`;
+    return;
+  }
+
+  goalsEl.innerHTML = state.goals.map(g => {
+    const frac = progressFraction(g);
+    const pct = (frac * 100).toFixed(0);
+    const third = 1/3;
+
+    let progText;
+    if (g.type === 'weight') {
+      progText = `<strong>${g.current}</strong> кг <span style="color:var(--text-secondary)">(сброшено ${getLost(g).toFixed(1)} из ${g.lose} кг)</span> · ${pct}%`;
+    } else {
+      progText = `<strong>${g.current}</strong> / ${g.total} ${g.unit} · ${pct}%`;
+    }
+
+    const slots = g.rewards.map((r, i) => {
+      const needFrac = third * (i + 1);
+      const unlocked = frac >= needFrac - 1e-9;
+
+      let stageLabel;
+      if (g.type === 'weight') stageLabel = '−' + (g.lose * needFrac).toFixed(1) + ' кг';
+      else stageLabel = Math.round(g.total * needFrac) + ' ' + g.unit;
+
+      let visual;
+      if (isImage(r.img)) {
+        visual = `<img src="${r.img}" class="reward-visual" alt="${r.name}"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                  <div class="reward-emoji" style="display:none">${r.icon}</div>`;
+      } else {
+        visual = `<div class="reward-emoji">${r.icon}</div>`;
+      }
+
+      return `<div class="reward-slot ${unlocked ? 'unlocked' : 'locked'}">
+        <div class="reward-stage">${stageLabel}</div>
+        ${visual}
+        <div class="reward-name">${r.name}</div>
+      </div>`;
+    }).join('');
+
+    let controls;
+    if (g.done) {
+      controls = '<div class="frozen">🏆 Цель выполнена! Прогресс заморожен.</div>';
+    } else if (g.type === 'count') {
+      const blocked = g.lastLog === today();
+      controls = `<button class="btn-primary" onclick="addCount(${g.id})" ${blocked ? 'disabled' : ''}>
+        ${blocked ? '✅ Отмечено сегодня' : '+1 ' + g.unit}
+      </button>`;
+    } else {
+      const blocked = g.lastLog === today();
+      controls = `<div class="weight-box">
+        <input id="w_${g.id}" type="number" step="0.1" placeholder="Вес сегодня" ${blocked ? 'disabled' : ''}>
+        <button class="btn-primary btn-small" onclick="saveWeight(${g.id})" ${blocked ? 'disabled' : ''}>
+          ${blocked ? '✅' : 'OK'}
+        </button>
+      </div>
+      ${blocked ? '<div class="hint" style="text-align:center;margin-top:8px;">Сегодня уже отмечено</div>' : ''}`;
+    }
+
+    return `<div class="card goal ${g.done ? 'done' : ''}">
+      <div class="goal-header">
+        <div class="goal-title">${g.name}${g.done ? ' <span class="cup">🏆</span>' : ''}</div>
+        <button class="menu-btn" onclick="toggleMenu(${g.id})">⋮</button>
+        <div class="dropdown-menu" id="menu-${g.id}">
+          <button onclick="resetGoal(${g.id})">↺ Сбросить прогресс</button>
+          <button class="danger" onclick="delGoal(${g.id})">🗑 Удалить цель</button>
+        </div>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" style="width:${pct}%"></div></div>
+      <div class="progress-text">${progText}</div>
+      <div class="rewards">${slots}</div>
+      <div style="margin-top:20px">${controls}</div>
+    </div>`;
+  }).join('');
+}
+
+toggleType();
+render();
+checkBackupReminder();
+</script>
+</body>
+</html>
