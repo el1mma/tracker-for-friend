@@ -193,6 +193,51 @@
     border: 1px solid var(--border-color); font-weight: 600;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04); transition: all 0.15s ease;
   }
+
+  .icon-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    border: 2px solid var(--border-color);
+    background: var(--bg-card);
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .icon-btn:active { transform: scale(0.9); }
+  .icon-btn.selected {
+    border-color: var(--accent);
+    background: #eff6ff;
+    box-shadow: 0 0 0 3px var(--accent-glow);
+    transform: scale(1.1);
+  }
+  .icon-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .icon-custom label {
+    margin: 0;
+    font-size: 0.8em;
+  }
+  .icon-custom input {
+    width: 70px;
+    text-align: center;
+    font-size: 1.5em;
+    padding: 8px;
+  }
+  
   .btn-ghost:active { transform: scale(0.97); background: var(--bg-input); }
 
   .row { display: flex; gap: 12px; }
@@ -333,8 +378,25 @@
   <label>Название цели</label>
   <input id="gName" placeholder="Например: Читать 30 минут в день">
   
-  <label>Иконка цели</label>
-  <input id="gIcon" placeholder="✨" maxlength="2" value="✨" style="width: 80px; text-align: center; font-size: 1.5em;">
+    <label>Иконка цели</label>
+  <div class="icon-picker" id="iconPicker">
+    <button type="button" class="icon-btn selected" data-icon="✨">✨</button>
+    <button type="button" class="icon-btn" data-icon="🌟">🌟</button>
+    <button type="button" class="icon-btn" data-icon="💪">💪</button>
+    <button type="button" class="icon-btn" data-icon="🏃">🏃</button>
+    <button type="button" class="icon-btn" data-icon="📚">📚</button>
+    <button type="button" class="icon-btn" data-icon="💰">💰</button>
+    <button type="button" class="icon-btn" data-icon="🎯">🎯</button>
+    <button type="button" class="icon-btn" data-icon="🧘">🧘</button>
+    <button type="button" class="icon-btn" data-icon="🥗">🥗</button>
+    <button type="button" class="icon-btn" data-icon="💤">💤</button>
+    <button type="button" class="icon-btn" data-icon="🎨">🎨</button>
+    <button type="button" class="icon-btn" data-icon="🏆">🏆</button>
+  </div>
+  <div class="icon-custom">
+    <label>или своя:</label>
+    <input id="gIcon" placeholder="🎁" maxlength="4" value="">
+  </div>
 
   <div id="countFields">
     <label>Сколько всего нужно</label>
@@ -525,6 +587,17 @@ function toggleNewGoal(forceState) {
   else arrow.classList.remove('rotated');
 }
 
+  let selectedGoalIcon = '✨';
+
+document.querySelectorAll('.icon-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('selected'));
+    this.classList.add('selected');
+    selectedGoalIcon = this.dataset.icon;
+    document.getElementById('gIcon').value = '';
+  });
+});
+
 function toggleGoalExpand(id) {
   const card = document.getElementById('goal-card-' + id);
   if (!card) return;
@@ -655,7 +728,8 @@ function addGoal() {
     return { icon: icon || '🎁', name: rname || ('Этап ' + n), img: rimg || '' };
   });
 
-  const icon = document.getElementById('gIcon').value.trim() || '✨';
+    const customIcon = document.getElementById('gIcon').value.trim();
+  const icon = customIcon || selectedGoalIcon;
      
   if (type === 'count') {
     const totalRaw = document.getElementById('gTotal').value.trim();
@@ -677,7 +751,11 @@ function addGoal() {
    'r4icon','r4name','r4img','r5icon','r5name','r5img']
     .forEach(id => document.getElementById(id).value = '');
   
-  ['gIcon','r1icon','r2icon','r3icon','r4icon','r5icon'].forEach(id => document.getElementById(id).value = id === 'gIcon' ? '✨' : '🎁');
+    ['r1icon','r2icon','r3icon','r4icon','r5icon'].forEach(id => document.getElementById(id).value = '🎁');
+  document.getElementById('gIcon').value = '';
+  selectedGoalIcon = '✨';
+  document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector('.icon-btn[data-icon="✨"]').classList.add('selected');
 
   save();
   setTimeout(() => goalsEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
