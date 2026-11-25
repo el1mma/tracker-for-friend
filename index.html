@@ -582,33 +582,11 @@ function shuffleArray(array) {
 const SESSION_PHRASES = shuffleArray(MOTIVATION_PHRASES);
 
 // УНИВЕРСАЛЬНЫЙ ШАБЛОН
-const SEED = [
-  { 
-    type: 'count', 
-    name: 'Пример: Читать 30 минут', 
-    icon: '📚', 
-    total: 30, 
-    unit: 'дней',
-    current: 0,
-    done: false,
-    lastLog: null,
-    rewardsPage: 0,
-    rewards: [
-      { icon: '🎁', name: 'Вкусный кофе', img: '' },
-      { icon: '🎁', name: 'Новая книга', img: '' },
-      { icon: '🎁', name: 'Поход в кино', img: '' },
-      { icon: '🎁', name: 'Ужин в ресторане', img: '' },
-      { icon: '🎁', name: 'Главный приз!', img: '' }
-    ]
-  }
-];
+// ПУСТОЙ СТАРТ — никаких примеров
+const SEED = [];
 
 function makeSeedGoals() {
-  return SEED.map((s, idx) => {
-    const g = Object.assign({}, s);
-    g.id = Date.now() + idx;
-    return g;
-  });
+  return []; // Возвращаем пустой массив вместо примера
 }
 
 const goalsEl = document.getElementById('goals');
