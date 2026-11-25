@@ -598,6 +598,19 @@ document.querySelectorAll('.icon-btn').forEach(btn => {
   });
 });
 
+document.getElementById('gIcon').addEventListener('input', function() {
+  if (this.value.trim()) {
+    // Если в поле что-то есть — снимаем выделение со всех кнопок
+    document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('selected'));
+    selectedGoalIcon = '';
+  } else {
+    // Если поле очистили — возвращаем выделение на ✨
+    selectedGoalIcon = '✨';
+    document.querySelectorAll('.icon-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelector('.icon-btn[data-icon="✨"]').classList.add('selected');
+  }
+});
+  
 function toggleGoalExpand(id) {
   const card = document.getElementById('goal-card-' + id);
   if (!card) return;
