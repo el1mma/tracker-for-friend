@@ -317,7 +317,13 @@
   .reward-inputs input { font-size: 14px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: white; }
   .reward-inputs .img-input { font-size: 12px; color: var(--text-secondary); }
 
-  .rewards-wrapper { position: relative; margin-top: 20px; overflow: hidden; }
+  .rewards-wrapper { 
+  position: relative; 
+  margin-top: 20px; 
+  overflow: hidden;
+  padding-top: 10px;   /* ← добавляем: даём место для подъёма награды */
+  margin-top: 10px;    /* ← компенсируем, чтобы визуально блок не съехал вниз */
+}
   .rewards-track { display: flex; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   .rewards-page { min-width: 100%; display: flex; gap: 10px; padding: 0 2px; }
 
