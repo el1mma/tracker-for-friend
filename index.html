@@ -1082,6 +1082,19 @@ render = function() {
   originalRender();
   updateStats();
 };
+
+ // Регистрация Service Worker для PWA и офлайн-режима
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((registration) => {
+        console.log('✅ Service Worker успешно зарегистрирован:', registration.scope);
+      })
+      .catch((error) => {
+        console.log('❌ Ошибка регистрации Service Worker:', error);
+      });
+  });
+}
 </script>
 </body>
 </html>
