@@ -62,11 +62,7 @@
     gap: 8px;
   }
   
-  .title-emoji {
-    font-size: 1em;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-  }
-  
+  .title-emoji { font-size: 1em; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
   .title-text {
     background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
     -webkit-background-clip: text;
@@ -81,20 +77,11 @@
   }
 
   .toggle-header {
-    cursor: pointer;
-    user-select: none;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 4px;
-    transition: opacity 0.2s;
+    cursor: pointer; user-select: none; display: flex; justify-content: space-between;
+    align-items: center; padding: 0 4px; transition: opacity 0.2s;
   }
   .toggle-header:active { opacity: 0.6; }
-  .toggle-header .arrow {
-    transition: transform 0.3s ease;
-    font-size: 0.8em;
-    color: var(--text-secondary);
-  }
+  .toggle-header .arrow { transition: transform 0.3s ease; font-size: 0.8em; color: var(--text-secondary); }
   .toggle-header .arrow.rotated { transform: rotate(180deg); }
 
   .card {
@@ -104,115 +91,47 @@
     padding: 20px;
     margin: 16px 0;
     position: relative;
-    box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.08),
-                0 2px 6px -2px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
     animation: fadeIn 0.4s ease-out;
-    overflow: hidden;
+    /* overflow: hidden; УДАЛЕНО, чтобы не резало меню */
   }
   
   .card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 4px;
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
     background: linear-gradient(180deg, var(--accent), var(--success));
     border-radius: 20px 0 0 20px;
   }
-  
-  .card.done::before {
-    background: linear-gradient(180deg, var(--gold), #fbbf24);
-  }
+  .card.done::before { background: linear-gradient(180deg, var(--gold), #fbbf24); }
 
   .goal-card { transition: all 0.3s ease; }
-  
-  .goal-preview {
-    cursor: pointer;
-    padding: 16px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .goal-preview-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-  }
+  .goal-preview { cursor: pointer; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
+  .goal-preview-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
   
   .goal-preview-title {
-    font-weight: 700;
-    font-size: 1em;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-weight: 700; font-size: 1em; flex: 1; display: flex; align-items: center;
+    gap: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   
-  .goal-icon {
-    font-size: 0.95em;
-    flex-shrink: 0;
-    opacity: 0.7;
-    filter: grayscale(30%);
-  }
+  .goal-icon { font-size: 0.95em; flex-shrink: 0; opacity: 0.7; filter: grayscale(30%); }
+  .goal-preview-progress { font-size: 0.85em; color: var(--text-secondary); font-weight: 600; }
   
-  .goal-preview-progress {
-    font-size: 0.85em;
-    color: var(--text-secondary);
-    font-weight: 600;
-  }
-  
-  .goal-preview-bar {
-    height: 6px;
-    background: var(--bg-input);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-  
+  .goal-preview-bar { height: 6px; background: var(--bg-input); border-radius: 99px; overflow: hidden; }
   .goal-preview-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--success));
-    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
-    border-radius: 99px;
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--success));
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1); border-radius: 99px;
   }
   
-  .goal-details {
-    display: none;
-    padding: 0 20px 20px;
-    animation: fadeIn 0.3s ease-out;
-  }
-  
+  .goal-details { display: none; padding: 0 20px 20px; animation: fadeIn 0.3s ease-out; }
   .goal-card.expanded .goal-details { display: block; }
-  
-  .goal-card.expanded .goal-preview {
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 12px;
-  }
-  
-  .expand-icon {
-    transition: transform 0.3s ease;
-    font-size: 0.9em;
-    color: var(--text-secondary);
-  }
-  
+  .goal-card.expanded .goal-preview { border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+  .expand-icon { transition: transform 0.3s ease; font-size: 0.9em; color: var(--text-secondary); }
   .goal-card.expanded .expand-icon { transform: rotate(180deg); }
   
   .streak-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    display: inline-flex; align-items: center; gap: 4px;
     background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    color: #92400e;
-    padding: 4px 10px;
-    border-radius: 99px;
-    font-size: 0.75em;
-    font-weight: 700;
-    margin-left: 8px;
-    box-shadow: 0 2px 6px rgba(251, 191, 36, 0.3);
-    border: 1px solid rgba(251, 191, 36, 0.3);
+    color: #92400e; padding: 4px 10px; border-radius: 99px; font-size: 0.75em; font-weight: 700;
+    margin-left: 8px; box-shadow: 0 2px 6px rgba(251, 191, 36, 0.3); border: 1px solid rgba(251, 191, 36, 0.3);
   }
      
   .menu-btn {
@@ -224,7 +143,7 @@
   .dropdown-menu {
     position: absolute; top: 50px; right: 16px; background: white;
     border: 1px solid var(--border-color); border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 100;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 200; /* Повышен z-index */
     display: none; overflow: hidden; min-width: 150px;
   }
   .dropdown-menu.show { display: block; animation: fadeIn 0.15s ease-out; }
@@ -241,14 +160,8 @@
 
   .motivation-box {
     background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
-    border: 1px solid #bfdbfe;
-    border-radius: 14px;
-    padding: 12px 14px;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeIn 0.4s ease-out;
+    border: 1px solid #bfdbfe; border-radius: 14px; padding: 12px 14px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px; animation: fadeIn 0.4s ease-out;
   }
   .motivation-box .m-emoji { font-size: 1.8em; line-height: 1; flex-shrink: 0; }
   .motivation-box .m-text { font-size: 0.88em; color: var(--text-primary); font-weight: 600; line-height: 1.35; }
@@ -355,9 +268,7 @@
   }
   .reward-slot.unlocked .reward-stage { background: rgba(245,158,11,0.15); color: #b45309; font-weight: 700; }
 
-  .rewards-nav {
-    display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 0 4px;
-  }
+  .rewards-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 0 4px; }
   .nav-btn {
     background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 50%;
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
@@ -387,7 +298,7 @@
     position: fixed; left: 50%; bottom: 18px; transform: translate(-50%, 140%);
     width: calc(100% - 32px); max-width: 480px;
     background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: 16px; padding: 14px 16px; z-index: 200;
+    border-radius: 16px; padding: 14px 16px; z-index: 300;
     box-shadow: 0 12px 30px rgba(0,0,0,0.15);
     display: flex; flex-direction: column; gap: 10px;
     transition: transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
@@ -535,7 +446,7 @@ function shuffleArray(array) {
 }
 const SESSION_PHRASES = shuffleArray(MOTIVATION_PHRASES);
 
-// УНИВЕРСАЛЬНЫЙ ШАБЛОН (без личных данных)
+// УНИВЕРСАЛЬНЫЙ ШАБЛОН
 const SEED = [
   { 
     type: 'count', 
@@ -571,9 +482,17 @@ try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e) { state = null; 
 
 if (state && Array.isArray(state.goals)) {
   state.goals.forEach(g => {
-    if (!g.icon) g.icon = '✨';
+    // Умная миграция иконок
+    if (!g.icon || g.icon === '✨') {
+      const n = (g.name || '').toLowerCase();
+      if (n.includes('похуд') || n.includes('вес')) g.icon = '⚖️';
+      else if (n.includes('заряд')) g.icon = '🌅';
+      else if (n.includes('трениров') || n.includes('спорт')) g.icon = '💪';
+      else if (n.includes('белок') || n.includes('еда')) g.icon = '🥩';
+      else if (n.includes('ккал') || n.includes('калори')) g.icon = '🍽️';
+      else g.icon = '✨';
+    }
     if (!g.rewardsPage) g.rewardsPage = 0;
-    // Миграция для старых версий с 3 наградами
     if (g.rewards && g.rewards.length === 3) {
       g.rewards.push({ icon: '🎁', name: 'Награда 4' });
       g.rewards.push({ icon: '🎁', name: 'Награда 5' });
@@ -865,13 +784,21 @@ function resetAll() {
 
 function toggleMenu(id) {
   const menu = document.getElementById('menu-' + id);
+  const card = menu.closest('.card');
   const shown = menu.classList.contains('show');
   closeAllMenus();
-  if (!shown) menu.classList.add('show');
+  if (!shown) {
+    menu.classList.add('show');
+    if (card) card.style.zIndex = '100';
+  }
 }
 
 function closeAllMenus() {
-  document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
+  document.querySelectorAll('.dropdown-menu.show').forEach(m => {
+    m.classList.remove('show');
+    const c = m.closest('.card');
+    if (c) c.style.zIndex = '';
+  });
 }
 
 document.addEventListener('click', e => {
