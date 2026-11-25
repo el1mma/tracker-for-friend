@@ -319,12 +319,11 @@
 
   .rewards-wrapper { 
   position: relative; 
-  margin-top: 20px; 
+  margin-top: 12px; 
   overflow: hidden;
-  padding-top: 10px;   /* ← добавляем: даём место для подъёма награды */
-  margin-top: 10px;    /* ← компенсируем, чтобы визуально блок не съехал вниз */
-}
-  .rewards-track { display: flex; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  padding-top: 12px;  /* ← даём пространство для "подпрыгивания" награды */
+} 
+ .rewards-track { display: flex; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
   .rewards-page { min-width: 100%; display: flex; gap: 10px; padding: 0 2px; }
 
   .reward-slot {
@@ -337,10 +336,12 @@
   .reward-slot.locked { opacity: 0.5; }
   .reward-slot.locked::after { content: '🔒'; position: absolute; top: 8px; right: 8px; font-size: 0.85em; opacity: 0.6; }
   .reward-slot.unlocked {
-    opacity: 1; border-color: var(--gold);
-    background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
-    box-shadow: 0 4px 12px var(--gold-glow); transform: translateY(-4px);
-  }
+  opacity: 1; 
+  border-color: var(--gold);
+  background: linear-gradient(180deg, #fffbeb 0%, #ffffff 100%);
+  box-shadow: 0 4px 12px var(--gold-glow); 
+  transform: translateY(-2px);  /* ← уменьшили прыжок с 4px до 2px */
+}
 
   .reward-emoji {
     font-size: 3em; line-height: 1; margin-bottom: 8px;
