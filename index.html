@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#f8fafc">
+<meta name="theme-color" content="#3b82f6">
+<link rel="manifest" href="manifest.json">
 <title>Мои цели</title>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
@@ -50,8 +51,27 @@
   }
 
   h1 {
-    font-size: 1.8em; margin: 10px 0 24px; text-align: center; font-weight: 800; letter-spacing: -0.5px;
-    text-shadow: 0 2px 10px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.8);
+    font-size: 1.8em;
+    margin: 10px 0 24px;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .title-emoji {
+    font-size: 1em;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  }
+  
+  .title-text {
+    background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   h2 {
@@ -80,15 +100,121 @@
   .card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 20px; padding: 20px; margin: 16px 0; position: relative;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 16px 0;
+    position: relative;
+    box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.08),
+                0 2px 6px -2px rgba(15, 23, 42, 0.04);
     animation: fadeIn 0.4s ease-out;
+    overflow: hidden;
+  }
+  
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: linear-gradient(180deg, var(--accent), var(--success));
+    border-radius: 20px 0 0 20px;
+  }
+  
+  .card.done::before {
+    background: linear-gradient(180deg, var(--gold), #fbbf24);
   }
 
-  .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-  .goal-title { font-weight: 700; font-size: 1.15em; flex: 1; padding-right: 10px; }
-  .cup { font-size: 1.6em; filter: drop-shadow(0 0 8px var(--gold-glow)); }
-
+  .goal-card { transition: all 0.3s ease; }
+  
+  .goal-preview {
+    cursor: pointer;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .goal-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .goal-preview-title {
+    font-weight: 700;
+    font-size: 1em;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .goal-icon {
+    font-size: 0.95em;
+    flex-shrink: 0;
+    opacity: 0.7;
+    filter: grayscale(30%);
+  }
+  
+  .goal-preview-progress {
+    font-size: 0.85em;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+  
+  .goal-preview-bar {
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  
+  .goal-preview-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--success));
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 99px;
+  }
+  
+  .goal-details {
+    display: none;
+    padding: 0 20px 20px;
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .goal-card.expanded .goal-details { display: block; }
+  
+  .goal-card.expanded .goal-preview {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+  }
+  
+  .expand-icon {
+    transition: transform 0.3s ease;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+  }
+  
+  .goal-card.expanded .expand-icon { transform: rotate(180deg); }
+  
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 0.75em;
+    font-weight: 700;
+    margin-left: 8px;
+    box-shadow: 0 2px 6px rgba(251, 191, 36, 0.3);
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+     
   .menu-btn {
     background: none; border: none; font-size: 1.5em; color: var(--text-secondary);
     cursor: pointer; padding: 0 8px; margin: -8px -8px 0 0; line-height: 1; border-radius: 50%;
@@ -111,16 +237,23 @@
   .dropdown-menu button:active { background: var(--bg-input); }
   .dropdown-menu button.danger { color: var(--danger); }
 
-  .xp-bar { height: 12px; background: var(--bg-input); border-radius: 99px; overflow: hidden; margin: 12px 0; }
-  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--success)); transition: width 0.6s cubic-bezier(0.4,0,0.2,1); border-radius: 99px; position: relative; }
-  .xp-fill::after {
-    content: ''; position: absolute; top:0; left:0; right:0; bottom:0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    animation: shimmer 2s infinite;
-  }
-  @keyframes shimmer { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%);} }
-
   .progress-text { font-size: 0.9em; color: var(--text-secondary); text-align: right; font-weight: 500; margin-bottom: 16px; }
+
+  .motivation-box {
+    background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%);
+    border: 1px solid #bfdbfe;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: fadeIn 0.4s ease-out;
+  }
+  .motivation-box .m-emoji { font-size: 1.8em; line-height: 1; flex-shrink: 0; }
+  .motivation-box .m-text { font-size: 0.88em; color: var(--text-primary); font-weight: 600; line-height: 1.35; }
+  .motivation-box .m-text .highlight { color: var(--accent); font-weight: 700; }
+  .motivation-box.done { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-color: var(--gold); }
 
   label { font-size: 0.85em; color: var(--text-secondary); display: block; margin-top: 16px; margin-bottom: 6px; font-weight: 600; }
 
@@ -164,7 +297,9 @@
   .reward-inputs input { font-size: 14px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border-color); background: white; }
   .reward-inputs .img-input { font-size: 12px; color: var(--text-secondary); }
 
-  .rewards { display: flex; gap: 10px; margin-top: 20px; }
+  .rewards-wrapper { position: relative; margin-top: 20px; overflow: hidden; }
+  .rewards-track { display: flex; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .rewards-page { min-width: 100%; display: flex; gap: 10px; padding: 0 2px; }
 
   .reward-slot {
     flex: 1; text-align: center; border-radius: 16px; padding: 16px 6px 12px;
@@ -214,12 +349,26 @@
   }
 
   .reward-name { font-size: 0.78em; color: var(--text-primary); font-weight: 600; line-height: 1.25; margin-bottom: 4px; }
-
   .reward-stage {
     font-size: 0.65em; color: var(--text-secondary);
     background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 99px; white-space: nowrap; margin-bottom: 6px;
   }
   .reward-slot.unlocked .reward-stage { background: rgba(245,158,11,0.15); color: #b45309; font-weight: 700; }
+
+  .rewards-nav {
+    display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding: 0 4px;
+  }
+  .nav-btn {
+    background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 1.1em; color: var(--text-secondary); transition: all 0.2s;
+  }
+  .nav-btn:active { transform: scale(0.9); background: var(--border-color); }
+  .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .page-indicator {
+    font-size: 0.8em; color: var(--text-secondary); font-weight: 600;
+    background: var(--bg-input); padding: 4px 12px; border-radius: 99px;
+  }
 
   .goal.done { border: 2px solid var(--gold); background: #fffbeb; }
   .frozen {
@@ -231,14 +380,6 @@
   .weight-box input { flex: 1; margin-top: 0; }
   .weight-box button { flex: 0 0 auto; margin-top: 0; width: auto; padding: 14px 20px; }
   .hint { font-size: 0.8em; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; }
-
-  .empty-state {
-    text-align: center; color: var(--text-secondary); padding: 40px 20px;
-    background: var(--bg-card); border: 1px dashed var(--border-color);
-    border-radius: 20px; margin: 16px 0;
-  }
-  .empty-state .emoji { font-size: 3em; margin-bottom: 12px; display: block; }
-  .empty-state .title { font-weight: 600; color: var(--text-primary); margin-bottom: 6px; font-size: 1.05em; }
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px);} to { opacity: 1; transform: translateY(0);} }
 
@@ -261,12 +402,11 @@
 </head>
 <body>
 
-<h1>🎯 Мои цели</h1>
+<h1><span class="title-emoji">🎯</span> <span class="title-text">Мои цели</span></h1>
 
 <h2>📋 Активные цели</h2>
 <div id="goals"></div>
 
-<!-- СВОРАЧИВАЕМАЯ ФОРМА НОВОЙ ЦЕЛИ -->
 <h2 class="toggle-header" onclick="toggleNewGoal()">
   <span>➕ Новая цель</span>
   <span id="newGoalArrow" class="arrow">▼</span>
@@ -281,6 +421,9 @@
 
   <label>Название цели</label>
   <input id="gName" placeholder="Например: Читать 30 минут в день">
+  
+  <label>Иконка цели</label>
+  <input id="gIcon" placeholder="✨" maxlength="2" value="✨" style="width: 80px; text-align: center; font-size: 1.5em;">
 
   <div id="countFields">
     <label>Сколько всего нужно</label>
@@ -297,7 +440,7 @@
     <div class="hint">💡 Целевой вес рассчитается автоматически.</div>
   </div>
 
-  <label style="margin-top:20px">🎁 Награда 1 (треть пути)</label>
+  <label style="margin-top:20px">🎁 Награда 1 (20%)</label>
   <div class="reward-inputs">
     <input id="r1icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
     <div class="mid">
@@ -306,7 +449,7 @@
     </div>
   </div>
 
-  <label>🎁 Награда 2 (две трети)</label>
+  <label>🎁 Награда 2 (40%)</label>
   <div class="reward-inputs">
     <input id="r2icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
     <div class="mid">
@@ -315,7 +458,7 @@
     </div>
   </div>
 
-  <label>🎁 Награда 3 (финиш)</label>
+  <label>🎁 Награда 3 (60%)</label>
   <div class="reward-inputs">
     <input id="r3icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
     <div class="mid">
@@ -324,10 +467,27 @@
     </div>
   </div>
 
+  <label>🎁 Награда 4 (80%)</label>
+  <div class="reward-inputs">
+    <input id="r4icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
+    <div class="mid">
+      <input id="r4name" class="name-input" placeholder="Название награды">
+      <input id="r4img" class="img-input" placeholder="Ссылка на картинку (необязательно)">
+    </div>
+  </div>
+
+  <label>🎁 Награда 5 (100%)</label>
+  <div class="reward-inputs">
+    <input id="r5icon" class="icon-input" placeholder="🎁" maxlength="4" value="🎁">
+    <div class="mid">
+      <input id="r5name" class="name-input" placeholder="Название награды">
+      <input id="r5img" class="img-input" placeholder="Ссылка на картинку (необязательно)">
+    </div>
+  </div>
+
   <button class="btn-primary" onclick="addGoal()">✨ Добавить цель</button>
 </div>
 
-<!-- БЭКАП -->
 <h2>🛡️ Резервная копия</h2>
 <div class="card">
   <div class="row">
@@ -344,26 +504,63 @@
   </button>
 </div>
 
-<!-- Тост -->
 <div class="toast" id="toast">
   <div class="toast-text"><span class="t-ico" id="toastIco">💾</span><span id="toastMsg"></span></div>
   <div class="toast-actions" id="toastActions"></div>
 </div>
 
 <script>
-const KEY = 'goalquest_friend_v1';
+const KEY = 'universal_goal_tracker_v1';
 
-// ПУСТОЙ СТАРТ — никаких шаблонных целей
-const SEED = [];
+const MOTIVATION_PHRASES = [
+  { emoji: '💪', text: 'Так держать! Ты на верном пути.' },
+  { emoji: '🔥', text: 'Огонь! Каждая отметка приближает к цели.' },
+  { emoji: '⚡', text: 'Мощно! Продолжай в том же духе.' },
+  { emoji: '🚀', text: 'Ты летишь к цели! Не сбавляй обороты.' },
+  { emoji: '🌟', text: 'Отличная работа! Ты делаешь всё правильно.' },
+  { emoji: '💎', text: 'Ты бриллиант! Каждая отметка — это шаг к мечте.' },
+  { emoji: '🏋️‍♀️', text: 'Сильнее с каждым днём! Так держать.' },
+  { emoji: '🌈', text: 'После дождя всегда выходит солнце. Ты справишься!' },
+  { emoji: '✨', text: 'Магия в постоянстве. Ты творишь её каждый день.' },
+  { emoji: '🎯', text: 'В точку! Ещё немного — и следующая награда твоя.' }
+];
+
+function shuffleArray(array) {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+const SESSION_PHRASES = shuffleArray(MOTIVATION_PHRASES);
+
+// УНИВЕРСАЛЬНЫЙ ШАБЛОН (без личных данных)
+const SEED = [
+  { 
+    type: 'count', 
+    name: 'Пример: Читать 30 минут', 
+    icon: '📚', 
+    total: 30, 
+    unit: 'дней',
+    current: 0,
+    done: false,
+    lastLog: null,
+    rewardsPage: 0,
+    rewards: [
+      { icon: '🎁', name: 'Вкусный кофе', img: '' },
+      { icon: '🎁', name: 'Новая книга', img: '' },
+      { icon: '🎁', name: 'Поход в кино', img: '' },
+      { icon: '🎁', name: 'Ужин в ресторане', img: '' },
+      { icon: '🎁', name: 'Главный приз!', img: '' }
+    ]
+  }
+];
 
 function makeSeedGoals() {
   return SEED.map((s, idx) => {
     const g = Object.assign({}, s);
     g.id = Date.now() + idx;
-    g.done = false;
-    g.lastLog = null;
-    if (s.type === 'weight') { g.current = s.current; g.target = s.target; }
-    else g.current = 0;
     return g;
   });
 }
@@ -371,6 +568,19 @@ function makeSeedGoals() {
 const goalsEl = document.getElementById('goals');
 let state;
 try { state = JSON.parse(localStorage.getItem(KEY)); } catch(e) { state = null; }
+
+if (state && Array.isArray(state.goals)) {
+  state.goals.forEach(g => {
+    if (!g.icon) g.icon = '✨';
+    if (!g.rewardsPage) g.rewardsPage = 0;
+    // Миграция для старых версий с 3 наградами
+    if (g.rewards && g.rewards.length === 3) {
+      g.rewards.push({ icon: '🎁', name: 'Награда 4' });
+      g.rewards.push({ icon: '🎁', name: 'Награда 5' });
+    }
+  });
+}
+
 if (!state || !Array.isArray(state.goals)) {
   state = { goals: makeSeedGoals(), lastBackup: new Date().toISOString() };
   localStorage.setItem(KEY, JSON.stringify(state));
@@ -386,26 +596,45 @@ function toggleType() {
   document.getElementById('weightFields').style.display = t === 'weight' ? 'block' : 'none';
 }
 
-/* ---------- СВОРАЧИВАНИЕ ФОРМЫ ---------- */
 function toggleNewGoal(forceState) {
   const form = document.getElementById('newGoalForm');
   const arrow = document.getElementById('newGoalArrow');
   const isHidden = form.style.display === 'none' || form.style.display === '';
   const newState = forceState !== undefined ? forceState : isHidden;
-  
   form.style.display = newState ? 'block' : 'none';
   if (newState) arrow.classList.add('rotated');
   else arrow.classList.remove('rotated');
 }
 
-/* ---------- КОНФЕТТИ ---------- */
+function toggleGoalExpand(id) {
+  const card = document.getElementById('goal-card-' + id);
+  if (!card) return;
+  if (navigator.vibrate) navigator.vibrate(20);
+  card.classList.toggle('expanded');
+  const g = state.goals.find(x => x.id === id);
+  if (g) {
+    g.expanded = card.classList.contains('expanded');
+    localStorage.setItem(KEY, JSON.stringify(state));
+  }
+}
+
+function changeRewardsPage(goalId, direction) {
+  const g = state.goals.find(x => x.id === goalId);
+  if (!g) return;
+  const newPage = g.rewardsPage + direction;
+  if (newPage >= 0 && newPage <= 1) {
+    g.rewardsPage = newPage;
+    save();
+  }
+}
+
 function checkAndCelebrate(oldFrac, newFrac, isFinal) {
-  const tiers = [1/3, 2/3, 1.0];
+  const tiers = [0.2, 0.4, 0.6, 0.8, 1.0];
   let unlockedTier = 0;
   for (let i = 0; i < tiers.length; i++) {
     if (oldFrac < tiers[i] && newFrac >= tiers[i]) unlockedTier = i + 1;
   }
-  if (unlockedTier === 3 || isFinal) {
+  if (unlockedTier === 5 || isFinal) {
     var end = Date.now() + 2500;
     (function frame() {
       confetti({ particleCount: 6, angle: 60, spread: 60, origin: { x: 0, y: 0.7 }, colors: ['#f59e0b','#10b981','#3b82f6','#fbbf24'] });
@@ -417,7 +646,6 @@ function checkAndCelebrate(oldFrac, newFrac, isFinal) {
   }
 }
 
-/* ---------- ТОСТ / НАПОМИНАНИЕ ---------- */
 const toast = document.getElementById('toast');
 const toastMsg = document.getElementById('toastMsg');
 const toastIco = document.getElementById('toastIco');
@@ -455,7 +683,6 @@ function checkBackupReminder() {
   }
 }
 
-/* ---------- БЭКАП ---------- */
 function markBackup() {
   state.lastBackup = new Date().toISOString();
   localStorage.setItem(KEY, JSON.stringify(state));
@@ -497,59 +724,97 @@ document.getElementById('importFile').addEventListener('change', function(e) {
   reader.readAsText(file);
 });
 
-/* ---------- ДОБАВЛЕНИЕ ---------- */
 function addGoal() {
   const type = document.getElementById('gType').value;
   const name = document.getElementById('gName').value.trim();
   if (!name) { alert('Введите название цели'); return; }
 
-  const rewards = [1,2,3].map(n => {
+  const rewards = [1,2,3,4,5].map(n => {
     const icon = document.getElementById('r' + n + 'icon').value.trim();
     const rname = document.getElementById('r' + n + 'name').value.trim();
     const rimg = document.getElementById('r' + n + 'img').value.trim();
     return { icon: icon || '🎁', name: rname || ('Этап ' + n), img: rimg || '' };
   });
 
+  const icon = document.getElementById('gIcon').value.trim() || '✨';
+     
   if (type === 'count') {
     const totalRaw = document.getElementById('gTotal').value.trim();
     const total = parseFloat(totalRaw);
     const unit = document.getElementById('gUnit').value.trim();
     if (totalRaw === '' || isNaN(total) || total <= 0) { alert('Введите общее количество числом'); return; }
     if (!unit) { alert('Введите единицу (дней / шт)'); return; }
-    state.goals.push({ id: Date.now(), type: 'count', name, total, unit, current: 0, rewards, done: false, lastLog: null });
+    state.goals.push({ id: Date.now(), type: 'count', name, icon, total, unit, current: 0, rewards, done: false, lastLog: null, rewardsPage: 0 });
   } else {
     const start = parseFloat(document.getElementById('gStart').value);
     const lose = parseFloat(document.getElementById('gLose').value);
     if (isNaN(start) || isNaN(lose) || start <= 0 || lose <= 0) { alert('Введите стартовый вес и сколько сбросить'); return; }
     if (lose >= start) { alert('Сбросить больше стартового веса нельзя'); return; }
-    state.goals.push({ id: Date.now(), type: 'weight', name, start, lose, target: start - lose, current: start, rewards, done: false, lastLog: null });
+    state.goals.push({ id: Date.now(), type: 'weight', name, icon, start, lose, target: start - lose, current: start, rewards, done: false, lastLog: null, rewardsPage: 0 });
   }
 
-  ['gName','gTotal','gUnit','gStart','gLose',
-   'r1icon','r1name','r1img','r2icon','r2name','r2img','r3icon','r3name','r3img']
+  ['gName','gIcon','gTotal','gUnit','gStart','gLose',
+   'r1icon','r1name','r1img','r2icon','r2name','r2img','r3icon','r3name','r3img',
+   'r4icon','r4name','r4img','r5icon','r5name','r5img']
     .forEach(id => document.getElementById(id).value = '');
   
-  // Возвращаем иконки по умолчанию 🎁
-  ['r1icon','r2icon','r3icon'].forEach(id => document.getElementById(id).value = '🎁');
+  ['gIcon','r1icon','r2icon','r3icon','r4icon','r5icon'].forEach(id => document.getElementById(id).value = id === 'gIcon' ? '✨' : '🎁');
 
   save();
   setTimeout(() => goalsEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  
   toggleNewGoal(false);
 }
 
-/* ---------- ПРОГРЕСС ---------- */
 function getLost(g) { return g.start - g.current; }
 function progressFraction(g) {
   if (g.type === 'weight') return Math.min(1, getLost(g) / g.lose);
   return Math.min(1, g.current / g.total);
 }
 
+function getMotivation(g, frac) {
+  if (g.done) {
+    return { emoji: '🏆', text: 'Ты сделал(а) это! Все награды твои. Гордись собой!', done: true };
+  }
+  const tiers = [0.2, 0.4, 0.6, 0.8, 1.0];
+  let nextTier = null;
+  for (let i = 0; i < tiers.length; i++) {
+    if (frac < tiers[i] - 1e-9) {
+      nextTier = { frac: tiers[i], index: i + 1 };
+      break;
+    }
+  }
+  if (!nextTier) {
+    return { emoji: '🎉', text: 'Последний рывок! Отметь сегодня, чтобы получить финальную награду.', done: false };
+  }
+  let remaining, unit;
+  if (g.type === 'weight') {
+    const targetWeight = g.start - (g.lose * nextTier.frac);
+    remaining = (g.current - targetWeight).toFixed(1);
+    unit = 'кг';
+  } else {
+    const targetCount = Math.ceil(g.total * nextTier.frac);
+    remaining = targetCount - g.current;
+    unit = g.unit;
+  }
+  const phraseIndex = g.id % SESSION_PHRASES.length;
+  const phrase = SESSION_PHRASES[phraseIndex];
+  return {
+    emoji: phrase.emoji,
+    text: `${phrase.text} До следующей награды осталось <span class="highlight">${remaining} ${unit}</span>!`,
+    done: false
+  };
+}
+
 function addCount(id) {
   const g = state.goals.find(x => x.id === id);
   if (g.done) return;
   if (g.lastLog === today()) { alert('Сегодня уже отмечено. Приходите завтра!'); return; }
+  if (navigator.vibrate) navigator.vibrate(50);
   const oldFrac = progressFraction(g);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+  if (g.lastLog === yesterdayStr) { g.streak = (g.streak || 0) + 1; } else { g.streak = 1; }
   g.current += 1;
   if (g.current >= g.total) { g.current = g.total; g.done = true; }
   g.lastLog = today();
@@ -565,7 +830,12 @@ function saveWeight(id) {
   if (isNaN(v) || v <= 0) { alert('Введите текущий вес числом'); return; }
   if (g.lastLog === today()) { alert('Сегодня уже отмечено. Приходите завтра!'); return; }
   if (v >= g.current) { alert('Вес должен быть меньше предыдущего (' + g.current + ' кг)'); return; }
+  if (navigator.vibrate) navigator.vibrate(50);
   const oldFrac = progressFraction(g);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().slice(0, 10);
+  if (g.lastLog === yesterdayStr) { g.streak = (g.streak || 0) + 1; } else { g.streak = 1; }
   g.current = v;
   if (g.current <= g.target) { g.current = g.target; g.done = true; }
   g.lastLog = today();
@@ -577,51 +847,46 @@ function resetGoal(id) {
   const g = state.goals.find(x => x.id === id);
   if (!confirm('Сбросить прогресс цели «' + g.name + '»?')) return;
   g.current = g.type === 'weight' ? g.start : 0;
-  g.done = false; g.lastLog = null;
+  g.done = false; g.lastLog = null; g.streak = 0;
   closeAllMenus(); save();
 }
+
 function delGoal(id) {
   const g = state.goals.find(x => x.id === id);
   if (!confirm('Удалить цель «' + g.name + '» навсегда?')) return;
   state.goals = state.goals.filter(x => x.id !== id);
   closeAllMenus(); save();
 }
+
 function resetAll() {
   if (!confirm('Сбросить ВСЁ? Все цели и прогресс будут удалены.')) return;
-  state = { goals: [], lastBackup: new Date().toISOString() }; save();
+  state = { goals: makeSeedGoals(), lastBackup: new Date().toISOString() }; save();
 }
 
-/* ---------- МЕНЮ ---------- */
 function toggleMenu(id) {
   const menu = document.getElementById('menu-' + id);
   const shown = menu.classList.contains('show');
   closeAllMenus();
   if (!shown) menu.classList.add('show');
 }
+
 function closeAllMenus() {
   document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('show'));
 }
+
 document.addEventListener('click', e => {
   if (!e.target.closest('.menu-btn') && !e.target.closest('.dropdown-menu')) closeAllMenus();
 });
 
-/* ---------- ОТРИСОВКА ---------- */
 function render() {
   if (!state.goals.length) {
-    goalsEl.innerHTML = `
-      <div class="empty-state">
-        <span class="emoji">🎁</span>
-        <div class="title">Пока нет целей</div>
-        <div>Нажми «➕ Новая цель», чтобы добавить первую!</div>
-      </div>`;
+    goalsEl.innerHTML = '<div class="card" style="text-align:center;color:var(--text-secondary);padding:30px;">Пока нет целей.<br>Добавьте первую ниже! 👇</div>';
     return;
   }
 
   goalsEl.innerHTML = state.goals.map(g => {
     const frac = progressFraction(g);
     const pct = (frac * 100).toFixed(0);
-    const third = 1/3;
-
     let progText;
     if (g.type === 'weight') {
       progText = `<strong>${g.current}</strong> кг <span style="color:var(--text-secondary)">(сброшено ${getLost(g).toFixed(1)} из ${g.lose} кг)</span> · ${pct}%`;
@@ -629,62 +894,83 @@ function render() {
       progText = `<strong>${g.current}</strong> / ${g.total} ${g.unit} · ${pct}%`;
     }
 
-    const slots = g.rewards.map((r, i) => {
-      const needFrac = third * (i + 1);
+    const renderSlot = (r, rewardIndex) => {
+      const needFrac = 0.2 * (rewardIndex + 1);
       const unlocked = frac >= needFrac - 1e-9;
-
       let stageLabel;
       if (g.type === 'weight') stageLabel = '−' + (g.lose * needFrac).toFixed(1) + ' кг';
       else stageLabel = Math.round(g.total * needFrac) + ' ' + g.unit;
-
       let visual;
       if (isImage(r.img)) {
-        visual = `<img src="${r.img}" class="reward-visual" alt="${r.name}"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                  <div class="reward-emoji" style="display:none">${r.icon}</div>`;
+        visual = `<img src="${r.img}" class="reward-visual" alt="${r.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><div class="reward-emoji" style="display:none">${r.icon}</div>`;
       } else {
         visual = `<div class="reward-emoji">${r.icon}</div>`;
       }
-
       return `<div class="reward-slot ${unlocked ? 'unlocked' : 'locked'}">
         <div class="reward-stage">${stageLabel}</div>
         ${visual}
         <div class="reward-name">${r.name}</div>
       </div>`;
-    }).join('');
+    };
+
+    const page1Html = g.rewards.slice(0, 3).map((r, i) => renderSlot(r, i)).join('');
+    const page2Html = g.rewards.slice(3, 5).map((r, i) => renderSlot(r, i + 3)).join('');
+    const pageLabel = g.rewardsPage === 0 ? '1-3 / 5' : '4-5 / 5';
+
+    const motivation = getMotivation(g, frac);
+    const motivationHtml = `<div class="motivation-box ${motivation.done ? 'done' : ''}"><div class="m-emoji">${motivation.emoji}</div><div class="m-text">${motivation.text}</div></div>`;
 
     let controls;
     if (g.done) {
       controls = '<div class="frozen">🏆 Цель выполнена! Прогресс заморожен.</div>';
     } else if (g.type === 'count') {
       const blocked = g.lastLog === today();
-      controls = `<button class="btn-primary" onclick="addCount(${g.id})" ${blocked ? 'disabled' : ''}>
-        ${blocked ? '✅ Отмечено сегодня' : '+1 ' + g.unit}
-      </button>`;
+      controls = `<button class="btn-primary" onclick="addCount(${g.id})" ${blocked ? 'disabled' : ''}>${blocked ? '✅ Отмечено сегодня' : '+1 ' + g.unit}</button>`;
     } else {
       const blocked = g.lastLog === today();
       controls = `<div class="weight-box">
         <input id="w_${g.id}" type="number" step="0.1" placeholder="Вес сегодня" ${blocked ? 'disabled' : ''}>
-        <button class="btn-primary btn-small" onclick="saveWeight(${g.id})" ${blocked ? 'disabled' : ''}>
-          ${blocked ? '✅' : 'OK'}
-        </button>
-      </div>
-      ${blocked ? '<div class="hint" style="text-align:center;margin-top:8px;">Сегодня уже отмечено</div>' : ''}`;
+        <button class="btn-primary btn-small" onclick="saveWeight(${g.id})" ${blocked ? 'disabled' : ''}>${blocked ? '✅' : 'OK'}</button>
+      </div>${blocked ? '<div class="hint" style="text-align:center;margin-top:8px;">Сегодня уже отмечено</div>' : ''}`;
     }
 
-    return `<div class="card goal ${g.done ? 'done' : ''}">
-      <div class="goal-header">
-        <div class="goal-title">${g.name}${g.done ? ' <span class="cup">🏆</span>' : ''}</div>
-        <button class="menu-btn" onclick="toggleMenu(${g.id})">⋮</button>
-        <div class="dropdown-menu" id="menu-${g.id}">
-          <button onclick="resetGoal(${g.id})">↺ Сбросить прогресс</button>
-          <button class="danger" onclick="delGoal(${g.id})">🗑 Удалить цель</button>
+    return `<div class="card goal-card ${g.expanded ? 'expanded' : ''} ${g.done ? 'done' : ''}" id="goal-card-${g.id}">
+      <div class="goal-preview" onclick="toggleGoalExpand(${g.id})">
+        <div class="goal-preview-header">
+          <div class="goal-preview-title">
+            <span class="goal-icon">${g.icon || '✨'}</span>
+            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;">${g.name}</span>
+            ${g.streak > 1 ? `<span class="streak-badge">🔥 ${g.streak}</span>` : ''}
+            ${g.done ? '<span class="cup">🏆</span>' : ''}
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="goal-preview-progress">${pct}%</div>
+            <span class="expand-icon">▼</span>
+            <button class="menu-btn" onclick="event.stopPropagation(); toggleMenu(${g.id})" style="margin:0;padding:0 4px;">⋮</button>
+            <div class="dropdown-menu" id="menu-${g.id}">
+              <button onclick="event.stopPropagation(); resetGoal(${g.id})">↺ Сбросить прогресс</button>
+              <button class="danger" onclick="event.stopPropagation(); delGoal(${g.id})">🗑 Удалить цель</button>
+            </div>
+          </div>
         </div>
+        <div class="goal-preview-bar"><div class="goal-preview-fill" style="width:${pct}%"></div></div>
       </div>
-      <div class="xp-bar"><div class="xp-fill" style="width:${pct}%"></div></div>
-      <div class="progress-text">${progText}</div>
-      <div class="rewards">${slots}</div>
-      <div style="margin-top:20px">${controls}</div>
+      <div class="goal-details">
+        <div class="progress-text" style="margin-top:16px;">${progText}</div>
+        ${motivationHtml}
+        <div class="rewards-wrapper">
+          <div class="rewards-track" style="transform: translateX(-${g.rewardsPage * 100}%)">
+            <div class="rewards-page">${page1Html}</div>
+            <div class="rewards-page">${page2Html}</div>
+          </div>
+        </div>
+        <div class="rewards-nav">
+          <button class="nav-btn" onclick="event.stopPropagation(); changeRewardsPage(${g.id}, -1)" ${g.rewardsPage === 0 ? 'disabled' : ''}>←</button>
+          <div class="page-indicator">${pageLabel}</div>
+          <button class="nav-btn" onclick="event.stopPropagation(); changeRewardsPage(${g.id}, 1)" ${g.rewardsPage === 1 ? 'disabled' : ''}>→</button>
+        </div>
+        <div style="margin-top:20px">${controls}</div>
+      </div>
     </div>`;
   }).join('');
 }
